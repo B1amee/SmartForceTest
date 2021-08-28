@@ -8,10 +8,7 @@ RUN gcc src/main.c -o build/main
 
 FROM ubuntu:latest
 
-# RUN groupadd -r sample && useradd -r -g sample sample
-# USER sample
-
+RUN mkdir /data
 COPY --from=build /build/main .
-# COPY --from=build /logs .
 
-# ENTRYPOINT [ "./main" ]
+ENTRYPOINT [ "./main" ]
