@@ -22,6 +22,7 @@ int main(int argc, char *argv[]) {
         for (int i = 0; i < ARRAY_ARG_SIZE; i ++) {
             arguments[i] = argv[i];
         }
+        arguments[0] = argv[1];
         flag = fileSearch(arguments);
     } else {
         flag = 5;  // command line arguments error
@@ -83,7 +84,11 @@ int stringReplace(char *fileName, char **arguments) {
     int flag = 0;
     if (strstr(fileName, ".txt") != NULL) {
         // open TXT file
-        char tempFileName[STRING_SIZE] = "temp";
+        char tempFileName[STRING_SIZE];
+        int dirNameLen = strlen(arguments[0]);
+        int tempLen = strlen("/temp");
+        memcpy(tempFileName, arguments[0], dirNameLen);
+        memcpy(tempFileName + dirNameLen, "/temp", tempLen);
         FILE *tempFile = fopen(tempFileName, "w");
         FILE *file = fopen(fileName, "r");
         if (file == NULL && tempFile == NULL) {
@@ -152,11 +157,17 @@ int stringSearch(char *inString, int line, char **arguments, FILE *out, char *fi
 int logger(char *inString, char *replase, char **arguments, int line, char *fileName) {
     // writing changes to .log file
     int flag = 0;  // error flag
+    int dirNameLen = strlen(arguments[0]);
+    int strLen;
     time_t t = time(NULL);
     struct tm *tm = localtime(&t);
+    char logFileName[STRING_SIZE];
     char str[STRING_SIZE];
-    strftime(str, STRING_SIZE - 1, "logs/%Y_%m_%d_%H_%M.log", tm);
-    FILE *logFile = fopen(str, "a");
+    strftime(str, STRING_SIZE - 1, "/%Y_%m_%d_%H_%M.log", tm);
+    strLen = strlen(str);
+    memcpy(logFileName, arguments[0], dirNameLen);
+    memcpy(logFileName + dirNameLen, str, strLen + 1);
+    FILE *logFile = fopen(logFileName, "a");
     if (logFile == NULL) {
         flag = 4;  // log file not exist
     } else {
